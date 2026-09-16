@@ -21,6 +21,11 @@ function formatDueDate(value?: string | null) {
 }
 
 async function loadUpcomingTasks() {
+  if (!auth.isAuthenticated) {
+    tasksLoading.value = false;
+    return;
+  }
+
   tasksLoading.value = true;
   tasksError.value = "";
   try {
@@ -43,7 +48,10 @@ onMounted(loadUpcomingTasks);
       <section class="dashboard-hero">
         <div>
           <span class="eyebrow">YOUR LEARNING SPACE</span>
-          <h1>Welcome back, {{ auth.user?.username }}.</h1>
+          <h1 v-if="auth.isAuthenticated">
+            Welcome back, {{ auth.user?.username }}.
+          </h1>
+          <h1 v-else>Welcome to StudyVault.</h1>
           <p>
             Keep your ideas close, revisit what matters, and build a knowledge
             base that grows with you.
@@ -86,7 +94,12 @@ onMounted(loadUpcomingTasks);
           </div>
           <RouterLink class="card-link" to="/tasks">View all →</RouterLink>
         </div>
-        <p v-if="tasksLoading" class="dashboard-task-state">Loading tasks…</p>
+        <p v-if="!auth.isAuthenticated" class="dashboard-task-state">
+          Sign in to view your upcoming study tasks.
+        </p>
+        <p v-else-if="tasksLoading" class="dashboard-task-state">
+          Loading tasks…
+        </p>
         <p v-else-if="tasksError" class="error">{{ tasksError }}</p>
         <p v-else-if="!upcomingTasks.length" class="dashboard-task-state">
           No upcoming tasks. Add one when you are ready to study.

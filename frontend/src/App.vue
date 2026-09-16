@@ -1,12 +1,19 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted } from "vue";
-import { useRouter } from "vue-router";
+import { computed, onMounted, onUnmounted } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "./stores/auth";
 import { useThemeStore } from "./stores/theme";
 import { hasShortcutModifier, isEditableTarget } from "./keyboard";
 const auth = useAuthStore();
 const theme = useThemeStore();
+const route = useRoute();
 const router = useRouter();
+const showDashboardLogin = computed(
+  () =>
+    auth.initialized &&
+    !auth.isAuthenticated &&
+    (route.path === "/" || route.path === "/dashboard"),
+);
 theme.initialize();
 async function logout() {
   await auth.logout();
@@ -60,6 +67,12 @@ onUnmounted(() => window.removeEventListener("keydown", handleGlobalShortcut));
         <RouterLink to="/trash">Trash</RouterLink>
       </nav>
       <div class="site-header-actions">
+        <RouterLink
+          v-if="showDashboardLogin"
+          class="button header-login"
+          to="/login"
+          >Login</RouterLink
+        >
         <div v-if="auth.isAuthenticated" class="account-menu">
           <span class="user-avatar" aria-hidden="true">{{
             auth.user?.username?.charAt(0).toUpperCase()

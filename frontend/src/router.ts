@@ -12,14 +12,9 @@ import StudyTasksView from "./views/StudyTasksView.vue";
 const router = createRouter({
   history: createWebHistory(),
   routes: [
-    { path: "/", redirect: "/dashboard" },
+    { path: "/", alias: "/dashboard", component: DashboardView },
     { path: "/login", component: LoginView, meta: { guestOnly: true } },
     { path: "/register", component: RegisterView, meta: { guestOnly: true } },
-    {
-      path: "/dashboard",
-      component: DashboardView,
-      meta: { requiresAuth: true },
-    },
     { path: "/notes", component: NotesView, meta: { requiresAuth: true } },
     {
       path: "/notes/new",
